@@ -12,7 +12,8 @@ Bu skill **spec'in sahibidir**. Çok oturumluk karar haritasını kendisi işlet
 ## Hangi moddasın
 
 - **A. Başlangıç:** Yeni proje veya özellik, `docs/spec.md` yok ya da boş → "A. Başlangıç yolu".
-- **B. Wayfinder oturumundan çağrıldın:** Bir Wayfinder haritasının `## Notes` bölümü seni çağırdı veya kullanıcı "haritayı spec'e işle" dedi → "B. Spec senkronu". Başlangıç yolunu baştan çalıştırma.
+- **B. Wayfinder oturumundan çağrıldın:** Bir Wayfinder haritasının `## Notes` bölümü seni çağırdı veya kullanıcı "haritayı spec'e işle" dedi → "B. Spec senkronu". Çağrı bağlamında `açılış` geçiyorsa (harita yeni kuruldu, ticket kapanmadı) → "B0. Harita açılışı". Başlangıç yolunu baştan çalıştırma.
+- **Yalnız çizim:** Kullanıcı "haritayı çiz" dediyse yalnız "Görselleştirme" bölümündeki betiği çalıştır; spec'e dokunma.
 - **C. Kapanış:** Harita **tamamlandı** (bkz. "Harita durumu") veya harita hiç gerekmedi → "C. Uygulamaya geçiş". Harita tamamlanmadıysa C'ye geçme; durumu raporla.
 
 ## Belgeler nerede durur
@@ -24,6 +25,7 @@ Bu skill **spec'in sahibidir**. Çok oturumluk karar haritasını kendisi işlet
 | `docs/spec.md` | bu skill | 7 başlıklı güncel proje tanımı; Wayfinder'ın **Destination**'ı |
 | `docs/plan.md` | bu skill | ilk uçtan uca dilimin planı |
 | `docs/data-contracts.md` | bu skill, gerekirse | spec 3. başlık büyürse veri sözleşmeleri |
+| `docs/harita.md`, `docs/harita.html` | bu skill (betikle üretilir) | karar şeması (Mermaid) ve etkileşimli bağ grafiği; elle düzenlenmez |
 | `.scratch/<effort>/map.md`, `.scratch/<effort>/issues/NN-*.md` | wayfinder | karar haritası ve karar ticket'ları (local-markdown tracker) |
 | `GLOSSARY.md`, `docs/adr/` | domain-modeling | terimler; yalnız geri alması zor, gerekçesiz şaşırtıcı, gerçek ödünleşimli kararlar için ADR |
 | `docs/agents/*.md`, `CLAUDE.md`/`AGENTS.md` içinde `## Agent skills` | setup-matt-pocock-skills | tracker ve domain doc yapılandırması |
@@ -52,6 +54,19 @@ Local-markdown tracker kullanılan projede `.scratch/<effort>/map.md` ve `.scrat
 - Kalıcı kayıtları ilgili spec değişikliğiyle aynı commit'te sürümlemeyi öner; commit'i kullanıcı istemeden atma.
 - Bu skill'in dağıtım reposundaki `.gitignore` kullanıcı projeleri için değildir; projeye kopyalanmaz.
 
+## Görselleştirme (`docs/harita.md`, `docs/harita.html`)
+
+Haritanın ve spec'in durumunu tek bakışta göstermek için [scripts/harita_ciz.py](scripts/harita_ciz.py) iki dosyayı **baştan üretir** ([scripts/harita_sablon.html](scripts/harita_sablon.html) şablonuyla):
+
+- **`docs/harita.md` — karar şeması (Mermaid):** ticket başına bir kutu (başlık, `Type`, durum), `Blocked by` satırlarından oklar, kapanan ticket'ta map'in `Decisions so far` özeti, sis ve kapsam dışı ayrı gruplarda, altında ticket tablosu. Obsidian, GitHub ve VS Code önizlemesi çizer.
+- **`docs/harita.html` — etkileşimli kuvvet grafiği:** spec, 7 başlığı, ticket'lar, sis ve kapsam dışı maddeleri düğüm; bağlar yalnız dosyalarda yazılı olandan çizilir (`Blocked by` oku; spec başlığındaki ticket bağlantısı; sis/kapsam dışı maddesinde geçen "spec N"; bağı yazılı olmayan kapsam dışı maddesi 2. başlığa). Düğüm üzerine gelince bağları öne çıkar ve özetini gösterir, tıklayınca dosyayı açar. Tarayıcıda açılır; d3 cdnjs'ten yüklenir.
+- Renk durumu gösterir: kapalı, çalışılabilir, sahiplenilmiş, bloklu; sis kesikli, kapsam dışı soluk.
+- **Kaynaklar yalnız okunur:** ticket başlık satırları, `map.md` bölümleri, `docs/spec.md`. Ticket gövdesi (`## Question`, `## Answer`) okunmaz. Betik ticket, map veya spec dosyasına yazmaz.
+- **Uydurma bağ yok:** Dosyalarda yazılı olmayan bağ çizilmez; sis maddeleri ticket'lara bağlanmaz.
+- Çalıştırma, proje kökünde: `python <skill klasörü>/scripts/harita_ciz.py` (birden çok harita varsa `--effort <ad>`). Çıktının son satırındaki harita durumu senin "Harita durumu" değerlendirmenin yerine geçmez; Destination'ı sen kontrol edersin.
+- `docs/harita.md` ve `docs/harita.html` üretilmiş dosyalardır; elle düzeltme yapma, kaynağı düzelt ve yeniden üret. İlgili spec değişikliğiyle aynı commit'te sürümlenmesini öner.
+- Betik çalışmazsa (Python yok, harita bulunamadı) spec işini durdurma; "Görselleştirme üretilemedi: <neden>" de.
+
 ## A. Başlangıç yolu
 
 1. Mevcut bağlamı oku: varsa bilgi tabanındaki proje notu, proje klasöründe `docs/`, `GLOSSARY.md`, `docs/adr/`, `CLAUDE.md`/`AGENTS.md`, varsa `.scratch/`. Erişemediğini söyle.
@@ -60,6 +75,7 @@ Local-markdown tracker kullanılan projede `.scratch/<effort>/map.md` ve `.scrat
 4. Yaklaşımı en çok etkileyen eksik sorudan başla. Bu skill'in kendi fazında **tek seferde bir soru** sor; cevaplanmış tercihi tekrar sorma. (Wayfinder içindeki grilling turları kendi kuralıyla, birden çok soruyla ilerler; onu değiştirme.)
 5. `docs/spec.md` taslağını [şablonla](references/spec-sablonu.md) yaz; bilinmeyeni **açık soru** bırak, uydurma. Veri sözleşmelerini 3. başlıkta, kabul kriterlerini 6. başlıkta somutlaştır.
 6. Mühendislik / proses projesinde [mühendislik ekini](references/muhendislik-eki.md) uygula.
+6a. Görselleştirmeyi üret: henüz harita yoksa betik yalnız spec düğümlerini çizer.
 7. **Harita gerekir mi?** Açık sorular tek oturumda kullanıcıyla çözülebiliyorsa harita açma; sor-cevapla ve C'ye geç. Açık kararlar birbirine bağlıysa, araştırma/prototip/hazırlık işi bekliyorsa veya tek oturuma sığmıyorsa → "Wayfinder'a geçiş".
 
 ## Wayfinder'a geçiş
@@ -79,6 +95,9 @@ Notes:
   map.md'nin Decisions so far bölümüne işaretçi eklendikten SONRA, oturumu bitirmeden
   Call the Skill tool with "proje-iskeleti" ve şu bağlamı ver:
   "mod B · map: .scratch/<effort>/map.md · ticket: .scratch/<effort>/issues/<NN-slug>.md · spec: docs/spec.md".
+- Harita açılışı: Haritayı ve ilk ticket'ları yazdıktan SONRA, charting oturumunu bitirmeden
+  Call the Skill tool with "proje-iskeleti" ve şu bağlamı ver:
+  "mod B · açılış · map: .scratch/<effort>/map.md · spec: docs/spec.md".
 - proje-iskeleti ticket çözülmeden önce yüklenirse spec'i güncellemez; yukarıdaki çağrı yine yapılır.
 - Senkron tamamlanamazsa kararı yeniden açma veya yeniden çözme; eksik senkronu kullanıcıya bildir.
 - Bilgi durumları: tercih / doğrulanmış / varsayım / öneri / açık soru ayrı tutulur; kullanıcının kabul ettiği varsayım yine varsayımdır.
@@ -114,6 +133,23 @@ Haritayı şu üç durumdan birine koy:
 
 Harita tamamlanması uygulamaya geçiş demek değildir; C kontrolü ayrıca yapılır.
 
+## B0. Harita açılışı (charting oturumunun sonunda)
+
+Wayfinder haritayı kurarken kullanıcıyla varış noktasını ve kapsamı netleştirir; bu kararlar ticket'a değil `map.md`'ye (Destination, Out of scope) yazılır ve B'nin ön koşullarını karşılamaz. B0 bunları spec'e bir kez işler.
+
+**Ön koşul:** `map.md` var, en az bir ticket dosyası var. Değilse "Harita açılışı bekliyor: <eksik>" de.
+
+**Adımlar:**
+1. `map.md`'nin Destination, Out of scope ve Not yet specified bölümlerini oku; spec'in 2. ve 7. başlığıyla karşılaştır.
+2. Kullanıcının charting sırasında verdiği kapsam kararlarını 2. başlığa **tercih** olarak yaz; kaynağı `harita açılışı <tarih>` ve `map.md` bağlantısı. `Kapanan kararlar` bölümüne ekleme: orası ticket ve ADR içindir.
+3. 7. başlıktaki her açık soruyu karşılığına bağla: ticket'a dönüştüyse `açık → <ticket bağlantısı>`, sise gittiyse `açık → haritada Not yet specified`, kapsam dışı sayıldıysa `kapsam dışı → map.md`. Satırları silme.
+4. Spec başlığındaki `Karar haritası:` satırını harita yoluna çevir.
+5. Karar kayıtlarının Git tarafından dışlanmadığını kontrol et (bkz. "Karar kayıtları kalıcı proje belgesidir").
+6. Görselleştirmeyi üret.
+7. Ne değiştiğini kullanıcıya kısaca göster. Haritada olup spec'le çelişen bir şey varsa sessizce düzeltme; farkı göster ve sor.
+
+Wayfinder dosyalarına (map, ticket) yazma; haritayı yeniden kurma.
+
 ## B. Spec senkronu (Wayfinder oturumunda)
 
 Wayfinder'ın akışı önceliklidir: yeni soru üretme, ticket'ın kararını değiştirme, ticket ve map dosyalarına yazma.
@@ -138,6 +174,7 @@ Biri eksikse spec'i **güncelleme**: "Spec senkronu bekliyor: <ticket> · eksik:
 5. 7. başlıktaki ilgili açık soruyu silme; "çözüldü → ticket bağlantısı" diye işaretle. Bu ticket için "senkron bekliyor" satırı varsa kaldır.
 6. Karar spec'te çelişki doğuruyorsa düzeltmeyi kullanıcıya göster; spec'i sessizce yeniden yazma.
 7. Harita durumunu ve geçiş kontrolünü tek satırla söyle: "Harita: <tamamlandı | devam ediyor | takıldı (neden)> · Geçiş için kalan: …". İlk senkronda karar kayıtlarının Git tarafından dışlanmadığını da kontrol et.
+8. Görselleştirmeyi yeniden üret (`docs/harita.md`, `docs/harita.html`). Tekrar kontrolünde satır bulunduğu için 3–5. adımlar atlansa bile bu adım yapılır: Wayfinder bu arada yeni ticket açmış olabilir.
 
 **Senkron tamamlanamazsa** (spec yok, yazılamıyor, çelişki kullanıcı kararı bekliyor): ticket'a ve map'e dokunma, kararı yeniden açma veya yeniden çözme. Kullanıcıya "Spec senkronu eksik: <ticket> → <neden>" de. Spec yazılabiliyorsa 7. başlığa "senkron bekliyor → <ticket bağlantısı>" satırı ekle; sonraki çağrı bu satırı tamamlayıp kaldırır.
 
@@ -155,7 +192,7 @@ Geçiş kontrolü:
 - Spec'te "senkron bekliyor" satırı kaldı mı?
 - Karar kayıtları sürümleniyor mu (bkz. "Karar kayıtları kalıcı proje belgesidir")?
 
-Geçerse ilk uçtan uca dilimin küçük planını `docs/plan.md`'ye yaz ve uygulamayı temiz yeni oturumda başlatmayı öner. Geçmezse eksikleri listele; harita varsa yeni ticket gerektiğini söyle (ticket'ı Wayfinder açar).
+Geçerse görselleştirmeyi son kez üret, ilk uçtan uca dilimin küçük planını `docs/plan.md`'ye yaz (karar özeti için `docs/harita.md`'ye bağlantı ver) ve uygulamayı temiz yeni oturumda başlatmayı öner. Geçmezse eksikleri listele; harita varsa yeni ticket gerektiğini söyle (ticket'ı Wayfinder açar).
 
 ## Sürekli kurallar
 
