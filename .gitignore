@@ -1,0 +1,23 @@
+# İşletim sistemi ve editör
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
+*.swp
+*~
+
+# Obsidian ve yerel ajan ayarları
+.obsidian/
+.claude/settings.local.json
+
+# Deneme artıkları ve yerel çalışma dosyaları
+.scratch/
+tmp/
+*.log
+
+# Erişim bilgileri
+.env
+.env.*
+*.pem
+*.key
