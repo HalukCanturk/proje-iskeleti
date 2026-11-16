@@ -194,10 +194,14 @@ Local-markdown tracker kullanılan bir projede `.scratch/<effort>/map.md` ve `.s
   - spec'teki ticket bağlantılarının çalışması
 - "Karar kayıtları ve Git" bölümündeki `.gitignore` kuralları gerçek `git` ile ayrı bir deneme deposunda sınandı. Eski `.scratch/` kuralı harita ve ticket dosyalarını dışlıyordu. Önerilen kurallarla yalnız `map.md` ve `issues/` takip edildi, geçici dosyalar ve başka klasörler dışlandı. `git check-ignore -v` komutunun `!` kuralını da yazdırdığı bu testte görüldü ve talimat buna göre yazıldı.
 
+- **Uçtan uca deneme (2026-11-16, küçük bir deneme deposu):** mod A spec taslağı; `setup-matt-pocock-skills` (local markdown); `/mattpocock-skills:wayfinder` ile harita, 5 ticket ve `Blocked by` bağları; bir **research** ticket'ının alt ajanla çözülüp kapanması; ardından `Notes` talimatıyla `proje-iskeleti`'nin mod B için çağrılması, üç ön koşulun kontrolü ve `docs/spec.md` senkronu gözlendi.
+- Aynı denemede bir boşluk bulundu: harita kurulurken verilen kapsam kararları yalnız `map.md`'ye yazılıyor, mod B bunları işlemiyordu. B0 (harita açılışı) bu yüzden eklendi.
+- `harita_ciz.py` deneme deposunda haritalı ve haritasız durumda çalıştırıldı; `docs/harita.html` tarayıcıda çizildi.
+
 **Henüz yapılmayan:**
-- Gerçek bir uçtan uca Wayfinder oturumu tamamlanmadı. Yani `/mattpocock-skills:wayfinder` ile harita kurup bir kararı kapatmak denenmedi.
-- **Otomatik spec senkronu doğrulanmadı.** Wayfinder'ın `Notes` talimatıyla `proje-iskeleti`'yi ticket kapandıktan sonra gerçekten çağırıp `docs/spec.md`'yi güncellediği henüz gözlenmedi. Bu bir tasarım hedefi, doğrulanmış bir özellik değil.
-- Senkronun ön koşul kontrolü, tekrar çağrıda kopya oluşturmama, eksik senkron bildirimi ve "takıldı" harita durumunun ayrımı sadece talimat olarak yazıldı. Gerçek bir oturumda gözlenmedi.
+- **Grilling** ticket'ında kullanıcı kararının spec'e senkronu gözlenmedi; gözlenen tek senkron research ticket'ındaydı.
+- B0 (harita açılışı) yalnız talimat olarak yazıldı; gerçek bir charting oturumunda denenmedi. Eklenmeden önceki denemede aynı hizalama elle yapıldı.
+- Tekrar çağrıda kopya oluşturmama, eksik senkron bildirimi, "takıldı" harita durumunun ayrımı ve mod C gerçek bir oturumda gözlenmedi.
 - Skill gerçek bir projede kullanılmadı.
 - Sadece Claude Code için yazıldı. Codex ve diğer ajanlarda denenmedi.
 
