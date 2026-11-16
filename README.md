@@ -150,3 +150,7 @@ Skill'in proje klasöründe oluşturduğu ya da kullandığı dosyalar:
 - Matt Pocock, *Skills For Real Engineers*: <https://github.com/mattpocock/skills>
 - Orijinal Wayfinder: <https://github.com/mattpocock/skills/blob/main/skills/engineering/wayfinder/SKILL.md>
 - Skill çağırma kuralları: <https://github.com/mattpocock/skills/blob/main/.agents/invocation.md>
+
+## Lisans
+
+[MIT](LICENSE). Bağımlılık olan `mattpocock/skills` paketi kendi MIT lisansıyla dağıtılır ve bu repoya dahil değildir.
