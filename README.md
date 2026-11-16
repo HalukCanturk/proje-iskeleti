@@ -33,8 +33,15 @@ Skill üç modda çalışır:
 | Mod | Ne zaman | Ne yapar |
 | --- | --- | --- |
 | A. Başlangıç | Yeni proje veya özellik | Başlangıç kartı, spec taslağı, harita gerekip gerekmediği kararı |
-| B. Spec senkronu | Wayfinder haritasının `Notes` bölümü skill'i çağırdığında | Çözülen ticket'ı ilgili spec başlığına işler, ticket'a bağlantı verir, bilgi durumunu etiketler |
-| C. Uygulamaya geçiş | Harita bittiğinde veya hiç gerekmediğinde | Geçiş kontrolü ve `docs/plan.md` |
+| B. Spec senkronu | Wayfinder bir ticket'ı kapattıktan sonra, `Notes` talimatıyla skill açıkça çağrıldığında | Ön koşulları kontrol eder (`## Answer`, `Status: resolved`, harita işaretçisi), çözülen kararı ilgili spec başlığına bir kez işler, ticket'a bağlantı verir, bilgi durumunu etiketler; tamamlanamazsa eksik senkronu bildirir |
+| C. Uygulamaya geçiş | Harita **tamamlandığında** veya hiç gerekmediğinde | Geçiş kontrolü ve `docs/plan.md` |
+
+Harita durumu üçe ayrılır:
+- **Tamamlandı:** Açık ticket yok, `Not yet specified` boş, hedef karşılanmış.
+- **Devam ediyor:** Çalışılabilir ticket var.
+- **Takıldı:** Açık ticket var ama çalışılabilir yok. Nedeni sahiplenilmiş iş, bağımlılık döngüsü ya da dış engel olabilir.
+
+Harita tamamlanması uygulamaya geçiş demek değildir; geçiş kontrolü ayrıca yapılır.
 
 ## Bağımlılık: Matt Pocock'un skills paketi
 
@@ -90,21 +97,25 @@ Boş bir proje klasöründe (`git init` önerilir):
    ```
    Geçiş metni şuna benzer:
    ```text
-   Destination: <proje> için docs/spec.md'nin 7 başlığı uygulanabilir düzeyde dolu ve
-   uygulamaya geçiş kontrolünü geçiyor (ilk uçtan uca dilim tanımlı).
+   Destination: <proje> için docs/spec.md'nin 7 başlığı uygulanabilir düzeyde dolu
+   (ilk uçtan uca dilimin kapsamı, girdileri, kuralları ve kabul ölçütü tanımlı).
 
    Notes:
-   - Her oturumda: Call the Skill tool with "proje-iskeleti" (spec senkronu, mod B).
-   - Kalıcı tercih: Ticket çözülüp ## Answer yazıldıktan ve map'e işaretçi eklendikten sonra,
-     oturumu bitirmeden proje-iskeleti'nin "B. Spec senkronu" adımlarını uygula.
+   - Spec senkronu: Bir ticket'ın ## Answer bölümü yazılıp Status: resolved yapıldıktan ve
+     map.md'nin Decisions so far bölümüne işaretçi eklendikten SONRA, oturumu bitirmeden
+     Call the Skill tool with "proje-iskeleti" ve şu bağlamı ver:
+     "mod B · map: .scratch/<effort>/map.md · ticket: .scratch/<effort>/issues/<NN-slug>.md · spec: docs/spec.md".
+   - proje-iskeleti ticket çözülmeden önce yüklenirse spec'i güncellemez; yukarıdaki çağrı yine yapılır.
+   - Senkron tamamlanamazsa kararı yeniden açma veya yeniden çözme; eksik senkronu kullanıcıya bildir.
    ```
+   Tam metin `SKILL.md` içindeki "Wayfinder'a geçiş" bölümündedir.
 
 4. **Kararları tek tek çöz.** Her yeni oturumda:
    ```text
    /mattpocock-skills:wayfinder .scratch/<effort>/map.md
    ```
 
-5. **Harita bitince:** "uygulamaya geçiş" de. Skill kontrolü yapar ve `docs/plan.md` dosyasını yazar.
+5. **Harita tamamlanınca:** "uygulamaya geçiş" de. Skill önce harita durumunu, sonra geçiş kontrolünü yapar ve `docs/plan.md` dosyasını yazar.
 
 Komut adları plugin'in ad alanıyla yazılmıştır (`mattpocock-skills:`). Komut menüsünde kısa adlarıyla da görünebilirler.
 
@@ -128,6 +139,27 @@ Skill'in proje klasöründe oluşturduğu ya da kullandığı dosyalar:
 | `GLOSSARY.md`, `docs/adr/` | domain-modeling |
 | `docs/agents/*.md`, `CLAUDE.md`/`AGENTS.md` içindeki `## Agent skills` bloğu | setup-matt-pocock-skills |
 
+## Karar kayıtları ve Git
+
+Local-markdown tracker kullanılan bir projede `.scratch/<effort>/map.md` ve `.scratch/<effort>/issues/*.md` **kalıcı proje belgeleridir**. `docs/spec.md` bu dosyalara bağlantı verir. Git dışında kalırlarsa bağlantılar başka bir bilgisayarda çalışmaz. Tracker'ın yolları orijinal paketin kuralıdır, değiştirilmez.
+
+- **Kopyalama uyarısı:** Bu reponun `.gitignore` dosyası sadece skill dağıtımı içindir. Kendi projene kopyalama, çünkü `.scratch/` satırı karar kayıtlarını dışlar.
+- **Kontrol:** Projende şu komutu çalıştır:
+  ```bash
+  git check-ignore .scratch/<effort>/map.md .scratch/<effort>/issues/01-<slug>.md
+  ```
+  Yazdırılan her yol dışlanıyor demektir. Hiçbir şey yazdırmazsa dosyalar sürümlenebilir. `-v` ile hangi kuralın etkili olduğu görülebilir, ama dikkat: `-v`, `!` ile başlayan geri alma kurallarını da yazdırır. `!` ile başlayan bir kural dosyanın dışlanmadığını gösterir.
+- **Düzeltme:** Dışlanıyorlarsa `.scratch/` klasörünü tümden dışlayan kuralı şu dar kurallarla değiştir:
+  ```gitignore
+  .scratch/*
+  !.scratch/<effort>/
+  .scratch/<effort>/*
+  !.scratch/<effort>/map.md
+  !.scratch/<effort>/issues/
+  ```
+  Git, dışlanmış bir klasörün içindeki dosyayı geri alamaz. Bu yüzden önce klasörü değil içeriğini dışlamak gerekir.
+- **Toplu sürümleme yapma:** `.scratch/` altındaki her şeyi sürümleme. Kalıcı olanlar harita ve ticket dosyaları. Geçici çıktılar dışlanmış kalır. Wayfinder'ın research/prototype bulguları zaten ayrı git dallarında durur.
+
 ## Doğrulama durumu
 
 **Yapılan kontroller:**
@@ -138,10 +170,12 @@ Skill'in proje klasöründe oluşturduğu ya da kullandığı dosyalar:
   - frontier'ın doğru hesaplanması
   - harita işaretçisinin var olması
   - spec'teki ticket bağlantılarının çalışması
+- "Karar kayıtları ve Git" bölümündeki `.gitignore` kuralları gerçek `git` ile ayrı bir deneme deposunda sınandı. Eski `.scratch/` kuralı harita ve ticket dosyalarını dışlıyordu. Önerilen kurallarla yalnız `map.md` ve `issues/` takip edildi, geçici dosyalar ve başka klasörler dışlandı. `git check-ignore -v` komutunun `!` kuralını da yazdırdığı bu testte görüldü ve talimat buna göre yazıldı.
 
 **Henüz yapılmayan:**
 - Gerçek bir uçtan uca Wayfinder oturumu tamamlanmadı. Yani `/mattpocock-skills:wayfinder` ile harita kurup bir kararı kapatmak denenmedi.
-- **Otomatik spec senkronu doğrulanmadı.** Wayfinder'ın `Notes` üzerinden `proje-iskeleti`'yi gerçekten çağırıp `docs/spec.md`'yi güncellediği henüz gözlenmedi. Bu bir tasarım hedefi, doğrulanmış bir özellik değil.
+- **Otomatik spec senkronu doğrulanmadı.** Wayfinder'ın `Notes` talimatıyla `proje-iskeleti`'yi ticket kapandıktan sonra gerçekten çağırıp `docs/spec.md`'yi güncellediği henüz gözlenmedi. Bu bir tasarım hedefi, doğrulanmış bir özellik değil.
+- Senkronun ön koşul kontrolü, tekrar çağrıda kopya oluşturmama, eksik senkron bildirimi ve "takıldı" harita durumunun ayrımı sadece talimat olarak yazıldı. Gerçek bir oturumda gözlenmedi.
 - Skill gerçek bir projede kullanılmadı.
 - Sadece Claude Code için yazıldı. Codex ve diğer ajanlarda denenmedi.
 

@@ -23,7 +23,13 @@ Standart, yönetmelik, şebeke/kurum şartı ve üretici verisi **varsayım değ
 Uygulamanın mantığını aynen tekrar eden test tek başına doğruluk kanıtı değildir.
 
 ## 5. Hassasiyet
-Kritik her varsayım için sor: "Bu değer %10 değişirse sonuç ne kadar değişir?" Sonucu çok oynatan varsayım açık sorular listesinde en üste çıkar ve doğrulama önceliği alır.
+Kritik her varsayım için sor: "Bu değer gerçekçi aralığında değişirse sonuç ne kadar değişir?" Aralığı parametreye göre seç, sabit bir yüzde kullanma:
+- parametrenin fiziksel olarak mümkün aralığı (ör. mevsimsel sıcaklık, toprak türüne göre iletkenlik),
+- ölçüm belirsizliği veya sensör doğruluğu,
+- kaynakta, standartta veya üretici verisinde verilen tolerans,
+- bunlar yoksa anlamlı senaryolar (en kötü / tipik / en iyi).
+
+±%10 gibi tek bir yüzde yalnız parametre için anlamlıysa ve daha iyi bilgi yoksa örnek yaklaşım olarak kullanılır. Seçilen aralık ve gerekçesi spec'in 4. başlığında varsayımın yanına yazılır. Sonucu çok oynatan varsayım açık sorular listesinde en üste çıkar ve doğrulama önceliği alır.
 
 ## 6. Donanım / sensör (yalnız fiziksel sisteme bağlanıyorsa)
 - Ölçüm aralığı, çözünürlük, örnekleme sıklığı

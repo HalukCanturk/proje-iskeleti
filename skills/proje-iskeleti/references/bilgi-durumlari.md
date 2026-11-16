@@ -12,7 +12,13 @@ Spec, Wayfinder ticket cevabı (`## Answer`) ve sohbette önemli her ifadeyi bu 
 
 Kurallar:
 
-- Kullanıcının bir varsayımı onaylaması onu **doğrulanmış** yapmaz; **tercih** olur. Dış dünyaya ilişkin iddianın kanıtı ayrı tutulur.
-- Kendi önerin onaylanana kadar **öneri** kalır.
+- Kullanıcının bir varsayımı kabul etmesi onun durumunu değiştirmez: **varsayım** kalır ve `varsayım (kullanıcı kabul etti)` diye yazılır. Ne **doğrulanmış** ne de **tercih** olur.
+- O varsayımla ilerleme kararı ayrıca **tercih** olarak kaydedilebilir. İki satır birbirine bağlanır, birbirinin yerine geçmez.
+- Bir ifade ancak uygun kanıt (ölçüm, kaynak, veri, bağımsız hesap) varsa **doğrulanmış** olur; kanıtın ne olduğu ve hangi kapsamda geçerli olduğu yazılır.
+- Örnek:
+  - "İşlem süresi sabit kabul ediliyor." → **varsayım** (kullanıcı kabul ettiyse `varsayım (kullanıcı kabul etti)`).
+  - "İlk sürümde bu sadeleştirmeyle ilerleyeceğiz." → **tercih**.
+  - "İşlem süresi ölçülen 50 çevrimde ±%2 içinde sabit." → **doğrulanmış**, yalnız bu ölçüm kapsamında.
+- Kendi önerin kullanıcı seçene kadar **öneri** kalır; kullanıcı seçerse seçim **tercih** olur. Öneri bir dünya iddiası içeriyorsa (ör. "bu sensör yeterince hassas") o iddia ayrıca **varsayım** veya **doğrulanmış** diye etiketlenir.
 - Eksik veriyi sessizce doldurma. Varsayılan bir değer kullanırsan **varsayım** diye yaz ve sonucu nasıl etkilediğini belirt.
 - Gerçek veri ile test/sentetik veriyi karıştırma; hangisinin kullanıldığını yaz.

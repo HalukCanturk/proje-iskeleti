@@ -11,9 +11,9 @@ Bu skill **spec'in sahibidir**. Çok oturumluk karar haritasını kendisi işlet
 
 ## Hangi moddasın
 
-- **A. Başlangıç:** Yeni proje veya özellik, `docs/spec.md` yok ya da boş → aşağıdaki "Başlangıç yolu".
-- **B. Wayfinder oturumundan çağrıldın:** Bir Wayfinder haritasının `## Notes` bölümü seni çağırdı veya kullanıcı "haritayı spec'e işle" dedi → "Spec senkronu". Başlangıç yolunu baştan çalıştırma.
-- **C. Kapanış:** Harita bitti (açık, bloklanmamış ticket yok, "Not yet specified" boş) veya harita hiç gerekmedi → "Uygulamaya geçiş".
+- **A. Başlangıç:** Yeni proje veya özellik, `docs/spec.md` yok ya da boş → "A. Başlangıç yolu".
+- **B. Wayfinder oturumundan çağrıldın:** Bir Wayfinder haritasının `## Notes` bölümü seni çağırdı veya kullanıcı "haritayı spec'e işle" dedi → "B. Spec senkronu". Başlangıç yolunu baştan çalıştırma.
+- **C. Kapanış:** Harita **tamamlandı** (bkz. "Harita durumu") veya harita hiç gerekmedi → "C. Uygulamaya geçiş". Harita tamamlanmadıysa C'ye geçme; durumu raporla.
 
 ## Belgeler nerede durur
 
@@ -29,8 +29,28 @@ Bu skill **spec'in sahibidir**. Çok oturumluk karar haritasını kendisi işlet
 | `docs/agents/*.md`, `CLAUDE.md`/`AGENTS.md` içinde `## Agent skills` | setup-matt-pocock-skills | tracker ve domain doc yapılandırması |
 
 - Bir karar tek yerde yaşar: haritalı işte ticket'ın `## Answer` bölümünde; spec yalnız sonucu yazar ve ticket'a bağlantı verir. Aynı gerekçeyi iki yerde tutma.
-- Ayrı karar kaydı klasörü (`docs/kararlar/`) veya kendi harita dosyası açma.
+- Ayrı karar kaydı klasörü (`docs/kararlar/`) veya kendi harita dosyası açma; orijinal tracker'ın yollarını (`.scratch/<effort>/…`) değiştirme.
 - Bilgi tabanı kullanılıyorsa proje klasörünün onun dışında olduğunu doğrula; belirsizse sor.
+
+### Karar kayıtları kalıcı proje belgesidir
+
+Local-markdown tracker kullanılan projede `.scratch/<effort>/map.md` ve `.scratch/<effort>/issues/*.md` **kalıcı proje belgeleridir**: `docs/spec.md` onlara bağlantı verir. Git dışında kalırlarsa spec'teki bağlantılar başka bir bilgisayarda veya klonda çalışmaz.
+
+- Harita ve ilk ticket dosyaları oluştuktan sonra (ilk spec senkronunda) ve C'de kontrol et: `git check-ignore .scratch/<effort>/map.md .scratch/<effort>/issues/<bir-ticket>.md` (`-v` olmadan). Yazdırılan her yol dışlanıyor; hiçbir şey yazdırmazsa dışlanmıyor. Hangi kuralın etkili olduğunu görmek için `-v` eklenebilir; `!` ile başlayan kural dosyanın dışlanmadığını gösterir.
+- Dışlanıyorlarsa kullanıcıya hangi kuralın dışladığını göster ve dar bir düzeltme öner. Git, dışlanmış bir klasörün içindeki dosyayı geri alamaz; bu yüzden `.scratch/` klasör kuralı yerine şu satırlar kullanılır:
+
+  ```gitignore
+  .scratch/*
+  !.scratch/<effort>/
+  .scratch/<effort>/*
+  !.scratch/<effort>/map.md
+  !.scratch/<effort>/issues/
+  ```
+
+  `.gitignore` dosyasını kullanıcı onaylamadan değiştirme.
+- `.scratch/` altındaki her şeyi topluca sürümlemeyi önerme. Kalıcı olanlar harita ve ticket dosyalarıdır; geçici çıktılar (deneme çıktıları, büyük ara dosyalar) dışlanmış kalır. Emin olmadığın dosyayı kullanıcıya sor. Wayfinder'ın research/prototype bulguları zaten ayrı git dallarında durur.
+- Kalıcı kayıtları ilgili spec değişikliğiyle aynı commit'te sürümlemeyi öner; commit'i kullanıcı istemeden atma.
+- Bu skill'in dağıtım reposundaki `.gitignore` kullanıcı projeleri için değildir; projeye kopyalanmaz.
 
 ## A. Başlangıç yolu
 
@@ -46,20 +66,22 @@ Bu skill **spec'in sahibidir**. Çok oturumluk karar haritasını kendisi işlet
 
 `wayfinder` ve `setup-matt-pocock-skills` **kullanıcı tarafından çağrılan** skill'lerdir (`disable-model-invocation: true`). Sen onları Skill aracıyla çağıramazsın; çağırmış gibi davranma. Kullanıcıya şu adımları ver:
 
-1. **Proje klasöründe bir kez:** `/mattpocock-skills:setup-matt-pocock-skills`. Tracker sorusunda uzak repo yoksa **local markdown** önerilir. Bu skill `CLAUDE.md` / `AGENTS.md` dosyasına `## Agent skills` bloğu ve `docs/agents/` ekler. Bilgi tabanı klasöründe değil, proje klasöründe çalıştırılır.
+1. **Proje klasöründe bir kez:** `/mattpocock-skills:setup-matt-pocock-skills`. Tracker sorusunda uzak repo yoksa **local markdown** önerilir. Bu skill `CLAUDE.md` / `AGENTS.md` dosyasına `## Agent skills` bloğu ve `docs/agents/` ekler. Bilgi tabanı klasöründe değil, proje klasöründe çalıştırılır. Projede `.scratch/` dosyalarını dışlayan geniş bir `.gitignore` kuralı varsa kullanıcıyı şimdiden uyar (bkz. "Karar kayıtları kalıcı proje belgesidir"); asıl kontrol harita oluştuktan sonra yapılır.
 2. **Haritayı başlat:** `/mattpocock-skills:wayfinder` ve aşağıdaki geçiş metnini mesaja ekle. Metni sen hazırla, `docs/spec.md` içindeki açık sorulardan ve kapsam dışı listesinden besle:
 
 ```text
-Destination: <proje> için docs/spec.md'nin 7 başlığı uygulanabilir düzeyde dolu ve
-uygulamaya geçiş kontrolünü geçiyor (ilk uçtan uca dilim tanımlı).
+Destination: <proje> için docs/spec.md'nin 7 başlığı uygulanabilir düzeyde dolu
+(ilk uçtan uca dilimin kapsamı, girdileri, kuralları ve kabul ölçütü tanımlı).
 
 Notes:
 - Alan: <kısa alan tanımı>. Dil: Türkçe.
-- Her oturumda: Call the Skill tool with "proje-iskeleti" (spec senkronu, mod B).
-- Kalıcı tercih: Ticket çözülüp ## Answer yazıldıktan ve map'e işaretçi eklendikten sonra, oturumu bitirmeden
-  proje-iskeleti'nin "B. Spec senkronu" adımlarını uygula: docs/spec.md'de ilgili başlığı güncelle,
-  ticket'a bağlantı ver, bilgi durumunu etiketle.
-- Bilgi durumları: tercih / doğrulanmış / varsayım / öneri / açık soru ayrı tutulur.
+- Spec senkronu: Bir ticket'ın ## Answer bölümü yazılıp Status: resolved yapıldıktan ve
+  map.md'nin Decisions so far bölümüne işaretçi eklendikten SONRA, oturumu bitirmeden
+  Call the Skill tool with "proje-iskeleti" ve şu bağlamı ver:
+  "mod B · map: .scratch/<effort>/map.md · ticket: .scratch/<effort>/issues/<NN-slug>.md · spec: docs/spec.md".
+- proje-iskeleti ticket çözülmeden önce yüklenirse spec'i güncellemez; yukarıdaki çağrı yine yapılır.
+- Senkron tamamlanamazsa kararı yeniden açma veya yeniden çözme; eksik senkronu kullanıcıya bildir.
+- Bilgi durumları: tercih / doğrulanmış / varsayım / öneri / açık soru ayrı tutulur; kullanıcının kabul ettiği varsayım yine varsayımdır.
 - Başlangıç bağlamı: docs/spec.md (taslak), açık sorular 7. başlıkta.
 ```
 
@@ -67,27 +89,71 @@ Notes:
 
 Not: Wayfinder'ın research ve prototype ticket'ları bulguları atılabilir git dallarına (`research/<ad>`) kaydeder ve dalı push eder. Proje klasörü git deposu değilse veya uzak repo yoksa bunu kullanıcıya önceden söyle.
 
+## Harita durumu
+
+Ticket durumlarını kurulu local-markdown tracker kurallarıyla oku (`setup-matt-pocock-skills` → `issue-tracker-local.md`); kendi durum adı uydurma. Proje başka bir tracker kullanıyorsa (GitHub, GitLab…) durumları ve sahiplenmeyi projenin `docs/agents/issue-tracker.md` dosyasına göre oku; aşağıdaki ayrım aynen geçerlidir.
+
+| Durum | Tracker'daki karşılığı |
+| --- | --- |
+| açık, sahiplenilmemiş | `Status:` satırı `claimed` veya `resolved` değil |
+| sahiplenilmiş | `Status: claimed` (bir oturum üzerinde çalışıyor) |
+| kapalı | `Status: resolved` |
+| bloklu | `Blocked by:` listesindeki ticket'lardan en az biri `resolved` değil |
+| çalışılabilir (frontier) | açık, sahiplenilmemiş ve bloklu değil |
+
+Haritayı şu üç durumdan birine koy:
+
+1. **Tamamlandı:** `resolved` olmayan ticket kalmamış, `## Not yet specified` boş ve Destination karşılanmış. (Kapsam dışı sayılıp kapatılan ticket'lar `## Out of scope` bölümünde durur; tamamlanmayı engellemez.)
+2. **Devam ediyor:** En az bir çalışılabilir ticket var. Sıradakini Wayfinder seçer.
+3. **Takıldı:** Açık ticket var ama çalışılabilir ticket yok. Harita **tamamlanmamıştır**. Nedeni ayır ve kullanıcıya göster:
+   - **Sahiplenilmiş iş:** Ticket'lar `claimed` ya da `claimed` bir ticket'ı bekliyor (`Blocked by:`). Başka bir oturum çalışıyor olabilir. Sahiplenmenin bayat olup olmadığını kullanıcıya sor; `claimed` durumunu kendin geri alma.
+   - **Bağımlılık döngüsü:** `Blocked by:` satırları döngü oluşturuyor (ör. 03 → 04 → 03). Döngüyü yazarak göster; ticket'ları düzenlemek Wayfinder oturumunun işidir.
+   - **Dış engel:** Ticket var olmayan bir dosyayı ya da dışarıda yapılacak bir işi bekliyor (erişim, veri temini). Gerekirse Wayfinder bir `task` ticket'ı açar.
+
+`Not yet specified` dolu ama hiç açık ticket yoksa da harita tamamlanmamıştır: sisin ticket'a dönüşmesi gerekir (Wayfinder'ın işi).
+
+Harita tamamlanması uygulamaya geçiş demek değildir; C kontrolü ayrıca yapılır.
+
 ## B. Spec senkronu (Wayfinder oturumunda)
 
-Yeni soru üretme ve ticket'ın kararını değiştirme; Wayfinder'ın akışı önceliklidir. Ticket çözülüp `## Answer` yazıldıktan sonra:
+Wayfinder'ın akışı önceliklidir: yeni soru üretme, ticket'ın kararını değiştirme, ticket ve map dosyalarına yazma.
+
+**Bağlam:** Çağrıda map, ticket ve spec yolu verilmiş olmalı. Verilmediyse map'in `Decisions so far` bölümündeki son işaretçiden ticket'ı bul; birden fazla aday varsa kullanıcıya sor.
+
+**Ön koşul (üçü birden):**
+- ticket dosyasında `## Answer` var,
+- ticket `Status: resolved`,
+- map'in `Decisions so far` bölümünde bu ticket'a işaretçi var.
+
+Biri eksikse spec'i **güncelleme**: "Spec senkronu bekliyor: <ticket> · eksik: <ön koşul>" de ve Wayfinder kendi adımlarını bitirdikten sonra seni yeniden çağırmalı diye hatırlat. Çözülmemiş bir kararı çözülmüş gibi spec'e yazma.
+
+**Adımlar:**
 
 1. Ticket'ın sorusunu ve cevabını oku; hangi spec başlığını etkilediğini bul.
-2. `docs/spec.md`'de o başlığı güncelle; sonucu kısa yaz ve ticket'a bağlantı ver: `([NN · başlık](../.scratch/<effort>/issues/NN-slug.md))`.
-3. Bilgi durumunu etiketle ([bilgi-durumlari.md](references/bilgi-durumlari.md)): kullanıcı tercihi mi, kaynakla doğrulanmış mı, hâlâ varsayım mı?
-4. 7. başlıktaki ilgili açık soruyu kaldırma; "çözüldü → ticket bağlantısı" diye işaretle.
-5. Kararın spec'te çelişki doğurduğunu görürsen düzeltmeyi kullanıcıya göster; spec'i sessizce yeniden yazma.
-6. Geçiş kontrolünü yeniden değerlendir ve tek satırla söyle: "Geçiş için kalan: …".
+2. **Tekrar kontrolü:** Senkronun yapılıp yapılmadığını yalnız `## Kapanan kararlar` bölümüne bak: bu ticket'a bağlantı veren bir satır var mı? (7. başlıktaki açık soru bağlantıları ve "senkron bekliyor" satırları senkron sayılmaz; onlar ticket'a senkrondan önce de bağlantı verir.)
+   - **Satır varsa:** 3–5. adımları atla, yeni özet veya bağlantı ekleme. Yalnız mevcut satırın ve ilgili başlığın cevapla tutarlı olduğunu kontrol et; tutarsızsa farkı kullanıcıya göster ve yerinde düzelt. Sonra 7. adıma geç.
+   - **Satır yoksa:** 3. adımdan devam et.
+3. İlgili başlığı güncelle; sonucu kısa yaz ve ticket'a bağlantı ver: `([NN · başlık](../.scratch/<effort>/issues/NN-slug.md))`. `## Kapanan kararlar` bölümüne bu ticket için tek satır ekle.
+4. Bilgi durumunu etiketle ([bilgi-durumlari.md](references/bilgi-durumlari.md)). Kullanıcının kabul ettiği bir varsayım `varsayım (kullanıcı kabul etti)` olarak kalır; bu varsayımla ilerleme kararı ayrıca `tercih` olarak yazılabilir. Kanıt yoksa `doğrulanmış` yazma.
+5. 7. başlıktaki ilgili açık soruyu silme; "çözüldü → ticket bağlantısı" diye işaretle. Bu ticket için "senkron bekliyor" satırı varsa kaldır.
+6. Karar spec'te çelişki doğuruyorsa düzeltmeyi kullanıcıya göster; spec'i sessizce yeniden yazma.
+7. Harita durumunu ve geçiş kontrolünü tek satırla söyle: "Harita: <tamamlandı | devam ediyor | takıldı (neden)> · Geçiş için kalan: …". İlk senkronda karar kayıtlarının Git tarafından dışlanmadığını da kontrol et.
+
+**Senkron tamamlanamazsa** (spec yok, yazılamıyor, çelişki kullanıcı kararı bekliyor): ticket'a ve map'e dokunma, kararı yeniden açma veya yeniden çözme. Kullanıcıya "Spec senkronu eksik: <ticket> → <neden>" de. Spec yazılabiliyorsa 7. başlığa "senkron bekliyor → <ticket bağlantısı>" satırı ekle; sonraki çağrı bu satırı tamamlayıp kaldırır.
 
 ## C. Uygulamaya geçiş
 
-Kontrol:
+Önce harita durumunu belirle (harita varsa). "Tamamlandı" değilse bu bölüme geçme; durumu ve nedenini raporla.
+
+Geçiş kontrolü:
 
 - Bu dilimin amacı ve kapsamı açık mı?
 - Girdiler mevcut mu; eksik veya hatalı girdinin davranışı veri sözleşmesinde tanımlı mı?
-- Temel alan kuralları ve varsayımlar yazılı ve etiketli mi?
+- Temel alan kuralları ve varsayımlar yazılı ve etiketli mi? Kabul edilmiş varsayımlar ve geçerlilik koşulları görünür mü?
 - Çıktı ve bileşen bağlantıları belli mi?
 - Kabul ölçütü ve kontrol yöntemi belirli mi?
-- Yaklaşımı kökten değiştirecek çözülmemiş engel var mı (açık ticket, "Not yet specified" maddesi)?
+- Spec'te "senkron bekliyor" satırı kaldı mı?
+- Karar kayıtları sürümleniyor mu (bkz. "Karar kayıtları kalıcı proje belgesidir")?
 
 Geçerse ilk uçtan uca dilimin küçük planını `docs/plan.md`'ye yaz ve uygulamayı temiz yeni oturumda başlatmayı öner. Geçmezse eksikleri listele; harita varsa yeni ticket gerektiğini söyle (ticket'ı Wayfinder açar).
 

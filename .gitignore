@@ -1,3 +1,8 @@
+# Bu dosya yalnız bu skill dağıtım reposu içindir.
+# Kullanıcı projelerine kopyalamayın: orada .scratch/<effort>/map.md ve
+# .scratch/<effort>/issues/ kalıcı karar kayıtlarıdır ve sürümlenmelidir
+# (bkz. README "Karar kayıtları ve Git").
+
 # İşletim sistemi ve editör
 .DS_Store
 Thumbs.db
@@ -11,7 +16,7 @@ desktop.ini
 .obsidian/
 .claude/settings.local.json
 
-# Deneme artıkları ve yerel çalışma dosyaları
+# Bu repoda yapılan denemelerin artıkları (bu repoda karar kaydı tutulmaz)
 .scratch/
 tmp/
 *.log

@@ -47,7 +47,8 @@ Zaman verisi varsa: zaman dilimi, sıklık, sıralama.
 
 ## 4. Alan kuralları, modeller ve varsayımlar
 Denklemler, sabitler, birimler, sınır koşulları, sadeleştirmeler, geçerlilik aralığı.
-Her varsayım: etiket · kaynak · geçerli olduğu koşul · nasıl kontrol edilir.
+Her varsayım: etiket (`varsayım` veya `varsayım (kullanıcı kabul etti)`) · kaynak · geçerli olduğu koşul · nasıl kontrol edilir.
+Kabul edilmiş bir varsayımla ilerleme kararı ayrı bir `tercih` satırıdır; varsayımı doğrulanmış yapmaz.
 Dış kısıtlar (standart, yönetmelik, üretici verisi) ayrı listede, kaynaklı.
 
 ## 5. Bileşenler ve akış
@@ -65,9 +66,11 @@ Sayı veya tolerans koyuyorsan gerekçesini yaz; keyfî eşik üretme.
 | Soru | Etkilediği başlık | Çözüm yolu | Çözülmeden ilerlenir mi? | Durum |
 Çözülen soru silinmez: "çözüldü → <ticket veya ADR bağlantısı>" diye işaretlenir.
 Harita varsa açık soruların asıl yeri Wayfinder ticket'larıdır; burada yalnız bağlantı kalır.
+Senkronu yarım kalan karar: "senkron bekliyor → <ticket bağlantısı>" (sonraki senkron tamamlayıp kaldırır).
 
 ## Kapanan kararlar (özet)
-- <karar sonucu> · <tercih|doğrulanmış|varsayım> · <ticket/ADR bağlantısı>
+Ticket veya ADR başına tek satır; aynı bağlantı ikinci kez eklenmez.
+- <karar sonucu> · <tercih | doğrulanmış | varsayım | varsayım (kullanıcı kabul etti)> · <ticket/ADR bağlantısı>
 ```
 
 ## Gerektiğinde eklenecek başlıklar
